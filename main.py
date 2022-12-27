@@ -119,8 +119,16 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
       writer.writerow(csvlist)
       item = item + 1
 
-    next_link = driver.find_element_by_link_text('次のページへ')
-    driver.get(next_link.get_attribute('href'))
+    # 次ページの有無を判定
+    if driver.find_elements_by_link_text('次のページへ'):
+      # 次ページが存在する場合は次ぺージへ遷移
+      next_link = driver.find_element_by_link_text('次のページへ')
+      driver.get(next_link.get_attribute('href'))
+
+    else:
+      # 次ページが存在しない場合はループ処理を終了
+      break
+
     if i > 6:
       break
 
