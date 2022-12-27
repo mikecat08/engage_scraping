@@ -74,10 +74,17 @@ time.sleep(1)
 csv_date = datetime.datetime.today().strftime("%Y%m%d%H%M")
 csv_file_name = 'engage' + csv_date + '.csv'
 
+# 有効性を確認するキーワードの設定
+kw01 = "リモート"
+kw02 = "未経験"
+kw03 = "歓迎"
+kw04 = "大手"
+kw05 = "休日"
+
 # ファイルの閉じ忘れが怖いのでwithで開く
 with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
   writer = csv.writer(f, lineterminator='\n')
-  csv_header = ["検索順位", "求人タイトル", "いいね数" , "URL"]
+  csv_header = ["検索順位", "求人タイトル", "いいね数" , "URL", kw01, kw02, kw03, kw04, kw05,]
   writer.writerow(csv_header)
 
   # 検索順位の定義
@@ -111,12 +118,44 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
         csvlist.append(like_num)
 
       else:
-
         # いいね数が表示されていない場合はリスト型に0を追加
         csvlist.append("0")
 
+      # 求人のURLをリスト型に追加
       csvlist.append(elem_a.get_attribute('href'))
+      
+      # 設定したキーワードが求人タイトルに含まれるか判定
+      if kw01 in elem_ttl.text:
+        #キーワードが含まれる場合はリスト型にTrueを追加
+        csvlist.append("True")
+      
+      else:
+        #キーワードが含まれない場合はリスト型にFalseを追加
+        csvlist.append("False")
+
+      if kw02 in elem_ttl.text:
+        csvlist.append("True")
+      else:
+        csvlist.append("False")
+
+      if kw03 in elem_ttl.text:
+        csvlist.append("True")
+      else:
+        csvlist.append("False")
+
+      if kw04 in elem_ttl.text:
+        csvlist.append("True")
+      else:
+        csvlist.append("False")
+
+      if kw05 in elem_ttl.text:
+        csvlist.append("True")
+      else:
+        csvlist.append("False")
+
+      # csvファイルにリスト型の内容を追加
       writer.writerow(csvlist)
+
       item = item + 1
 
     # 次ページの有無を判定
@@ -137,6 +176,9 @@ print ('csvファイルを作成しました。')
 # 作成したcsvファイルをpandasで読み込み
 df = pd.read_csv(csv_file_name, encoding="Shift-JIS")
 
+# いいね数が多い順にソート
+like_sort = df.sort_values("いいね数", ascending=False)
+
 # デスクトップへのパスを取得
 desktop_path = os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "\\Desktop"
 
@@ -146,7 +188,7 @@ os.makedirs(dir, exist_ok=True)
 
 # xlsxファイルをデスクトップのresultフォルダに書き出し
 xlsx_file_name = 'engage' + csv_date + '.xlsx'
-df.to_excel(dir + '//' + xlsx_file_name, index=False)
+like_sort.to_excel(dir + '//' + xlsx_file_name, index=False)
 print ('xlsxファイルを作成しました。')
 
 # csvファイルはもう使わないので削除
