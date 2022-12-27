@@ -5,6 +5,7 @@ import time
 import csv
 import datetime
 import os
+import re
 import pandas as pd
 import openpyxl
 
@@ -75,7 +76,7 @@ csv_file_name = 'engage' + csv_date + '.csv'
 # ファイルの閉じ忘れが怖いのでwithで開く
 with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
   writer = csv.writer(f, lineterminator='\n')
-  csv_header = ["検索順位", "求人タイトル", "URL"]
+  csv_header = ["検索順位", "求人タイトル", "いいね数" , "URL"]
   writer.writerow(csv_header)
 
   # 検索順位の定義
@@ -84,9 +85,28 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
   # 求人のタイトルをすべて取得する
   for elem_ttl in driver.find_elements_by_xpath("//a[@class='headArea']/div[@class='catch']"):
       elem_a = elem_ttl.find_element_by_xpath('..')
+      
       csvlist = []
       csvlist.append(str(item))
       csvlist.append(elem_ttl.text)
+
+      # いいね表示の有無を判定
+      if elem_a.find_elements_by_xpath("..//span[@class='num']"):
+        
+        # いいね数が表示されている場合はその数を取得
+        like = elem_a.find_element_by_xpath("..//span[@class='num']").text
+        
+        # 数字以外の部分が不要なので削除
+        like_num = re.sub(r"\D", "", like)
+
+        # いいね数をリスト型に追加
+        csvlist.append(like_num)
+
+      else:
+
+        # いいね数が表示されていない場合はリスト型に0を追加
+        csvlist.append("0")
+
       csvlist.append(elem_a.get_attribute('href'))
       writer.writerow(csvlist)
       item = item + 1
@@ -105,7 +125,7 @@ os.makedirs(dir, exist_ok=True)
 
 # xlsxファイルをデスクトップのresultフォルダに書き出し
 xlsx_file_name = 'engage' + csv_date + '.xlsx'
-df.to_excel(dir + '//' + xlsx_file_name)
+df.to_excel(dir + '//' + xlsx_file_name, index=False)
 print ('xlsxファイルを作成しました。')
 
 # csvファイルはもう使わないので削除
