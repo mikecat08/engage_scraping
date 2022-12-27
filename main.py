@@ -8,6 +8,7 @@ import os
 import re
 import pandas as pd
 import openpyxl
+import glob
 
 driver = webdriver.Chrome('./driver/chromedriver')
 
@@ -82,8 +83,15 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
   # 検索順位の定義
   item = 1
 
-  # 求人のタイトルをすべて取得する
-  for elem_ttl in driver.find_elements_by_xpath("//a[@class='headArea']/div[@class='catch']"):
+  # ループ用の変数を用意
+  i = 0
+
+  while True:
+    i = i + 1
+    time.sleep(1)
+
+    # 求人のタイトルをすべて取得する
+    for elem_ttl in driver.find_elements_by_xpath("//a[@class='headArea']/div[@class='catch']"):
       elem_a = elem_ttl.find_element_by_xpath('..')
       
       csvlist = []
@@ -111,6 +119,11 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
       writer.writerow(csvlist)
       item = item + 1
 
+    next_link = driver.find_element_by_link_text('次のページへ')
+    driver.get(next_link.get_attribute('href'))
+    if i > 6:
+      break
+
 print ('csvファイルを作成しました。')
 
 # 作成したcsvファイルをpandasで読み込み
@@ -129,7 +142,10 @@ df.to_excel(dir + '//' + xlsx_file_name, index=False)
 print ('xlsxファイルを作成しました。')
 
 # csvファイルはもう使わないので削除
-os.remove(csv_file_name)
+# 作業ディレクトリにあるcsvファイルを全て指定
+csv_files = glob.glob('*.csv')
+for csv_file in csv_files:
+  os.remove(csv_file)
 print ('csvファイルを削除しました。')
 
 # ブラウザを閉じる
