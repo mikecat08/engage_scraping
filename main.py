@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 import csv
@@ -12,8 +13,14 @@ import openpyxl as xl
 from openpyxl.styles import PatternFill
 import glob
 
-driver = webdriver.Chrome('./driver/chromedriver')
 
+# ヘッドレスモードでブラウザを起動
+options = Options()
+options.add_argument('--headless')
+driver = webdriver.Chrome('./driver/chromedriver', options=options)
+
+
+driver.set_window_size('1200', '1000')
 driver.get('https://en-gage.net/user/#/')
 time.sleep(1)
 
@@ -202,6 +209,10 @@ print(max1)
 
 # 黄緑色をセルに設定する処理
 fill = PatternFill(patternType='solid', fgColor='0000FF00')
+
+# # 
+# for i in range(2, max1+1):
+#   if ws1['']
 
 # xlsxファイルを保存
 wb1.save(dir + '//' + xlsx_file_name)
