@@ -12,6 +12,10 @@ import pandas as pd
 import openpyxl as xl
 from openpyxl.styles import PatternFill
 import glob
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 # ヘッドレスモードでブラウザを起動
@@ -190,7 +194,11 @@ like_sort = df.sort_values("いいね数", ascending=False)
 desktop_path = os.getenv("HOMEDRIVE") + os.getenv("HOMEPATH") + "\\Desktop"
 
 # デスクトップにresultというフォルダを作成
-dir = desktop_path + '\\' + 'result'
+dir_result = desktop_path + '\\' + 'result'
+os.makedirs(dir_result, exist_ok=True)
+
+# resultフォルダの中にファイル保存用のフォルダを作成
+dir = dir_result + '\\' + csv_date
 os.makedirs(dir, exist_ok=True)
 
 # xlsxファイルをデスクトップのresultフォルダに書き出し
@@ -210,7 +218,7 @@ print(max1)
 # 黄緑色をセルに設定する処理
 fill = PatternFill(patternType='solid', fgColor='0000FF00')
 
-# 
+# Trueのセルを黄緑色に着色
 for i in range(2, max1+1):
   if ws1['E' + str(i)].value == True:
     ws1['E' + str(i)].fill = fill
@@ -226,6 +234,60 @@ for i in range(2, max1+1):
 
   if ws1['I' + str(i)].value == True:
     ws1['I' + str(i)].fill = fill
+
+
+# ヒストグラムを作成するためのリスト型を定義
+kw1_data = []
+kw2_data = []
+kw3_data = []
+kw4_data = []
+kw5_data = []
+
+
+# キーワードが含まれている求人はそのいいね数順位をリスト型に格納
+for i in range(2, max1+1):
+  if ws1['E' + str(i)].value == True:
+    kw1_data.append(str(i))
+
+for i in range(2, max1+1):
+  if ws1['F' + str(i)].value == True:
+    kw2_data.append(str(i))
+
+for i in range(2, max1+1):
+  if ws1['G' + str(i)].value == True:
+    kw3_data.append(str(i))
+
+for i in range(2, max1+1):
+  if ws1['H' + str(i)].value == True:
+    kw4_data.append(str(i))
+
+for i in range(2, max1+1):
+  if ws1['I' + str(i)].value == True:
+    kw5_data.append(str(i))
+
+# figureとaxesを用意
+fig = plt.figure()
+ax1 = fig.add_subplot(3, 2, 1)
+ax2 = fig.add_subplot(3, 2, 2)
+ax3 = fig.add_subplot(3, 2, 3)
+ax4 = fig.add_subplot(3, 2, 4)
+ax5 = fig.add_subplot(3, 2, 5)
+
+# ヒストグラムを作成
+ax1.hist(kw1_data, bins=10, alpha=0.3)
+ax2.hist(kw2_data, bins=10, alpha=0.3)
+ax3.hist(kw3_data, bins=10, alpha=0.3)
+ax4.hist(kw4_data, bins=10, alpha=0.3)
+ax5.hist(kw5_data, bins=10, alpha=0.3)
+
+ax1.set_title(kw01)
+ax2.set_title(kw02)
+ax3.set_title(kw03)
+ax4.set_title(kw04)
+ax5.set_title(kw05)
+
+# ヒストグラムを画像として保存
+plt.savefig(dir + '//' + "hst.png")
 
 # xlsxファイルを保存
 wb1.save(dir + '//' + xlsx_file_name)
