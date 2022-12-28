@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 import time
 import csv
 import datetime
@@ -16,58 +17,56 @@ driver = webdriver.Chrome('./driver/chromedriver')
 driver.get('https://en-gage.net/user/#/')
 time.sleep(1)
 
-area_btn = driver.find_element_by_link_text("選択")
+area_btn = driver.find_element(By.LINK_TEXT, "選択")
 area_btn.click()
 time.sleep(1)
 
-kanto_btn = driver.find_element_by_link_text("関東")
+kanto_btn = driver.find_element(By.LINK_TEXT, "関東")
 kanto_btn.click()
 time.sleep(1)
 
-tokyo_btn = driver.find_element_by_link_text("東京都")
+tokyo_btn = driver.find_element(By.LINK_TEXT, "東京都")
 tokyo_btn.click()
 time.sleep(1)
 
-shibuya_btn = driver.find_element_by_link_text("渋谷区")
+shibuya_btn = driver.find_element(By.LINK_TEXT, "渋谷区")
 shibuya_btn.click()
 time.sleep(1)
 
-option_btn = driver.find_element_by_link_text("職種、給与など、こだわりは？")
+option_btn = driver.find_element(By.LINK_TEXT, "職種、給与など、こだわりは？")
 option_btn.click()
 time.sleep(1)
 
-checkbox_ce3 = driver.find_element_by_xpath("//label[@for='ce_3']")
+checkbox_ce3 = driver.find_element(By.XPATH, "//label[@for='ce_3']")
 checkbox_ce3.click()
 
-checkbox_ce5 = driver.find_element_by_xpath("//label[@for='ce_5']")
+checkbox_ce5 = driver.find_element(By.XPATH, "//label[@for='ce_5']")
 checkbox_ce5.click()
 
-checkbox_ce7 = driver.find_element_by_xpath("//label[@for='ce_7']")
+checkbox_ce7 = driver.find_element(By.XPATH, "//label[@for='ce_7']")
 checkbox_ce7.click()
 
-occupation_btn = driver.find_element_by_link_text("選択してください")
+occupation_btn = driver.find_element(By.LINK_TEXT, "選択してください")
 occupation_btn.click()
 time.sleep(1)
 
-# occupation_accordion_next = driver.find_element_by_xpath("//div[@class='md_accordion'][8]")
-occupation_accordion = driver.find_element_by_xpath("//div[@class='md_accordion'][7]")
-# occupation_accordion_next.click()
+occupation_accordion = driver.find_element(By.XPATH, "//div[@class='md_accordion'][7]")
 occupation_accordion.click()
 
-checkbox_p_401000 = driver.find_element_by_xpath("//label[@for='p_401000']")
+checkbox_p_401000 = driver.find_element(By.XPATH, "//label[@for='p_401000']")
 checkbox_p_401000.click()
 
-checkbox_p_402000 = driver.find_element_by_xpath("//label[@for='p_402000']")
+checkbox_p_402000 = driver.find_element(By.XPATH, "//label[@for='p_402000']")
 checkbox_p_402000.click()
 
 # checkbox_p_409000 = driver.find_element_by_xpath("//label[@for='p_409000']")
 # checkbox_p_409000.click()
 
-search_btn = driver.find_element_by_link_text("選択")
-search_btn.click()
+choose_btn = driver.find_element(By.LINK_TEXT, "選択")
+choose_btn.click()
 time.sleep(1)
 
-search_btn = driver.find_element_by_link_text("この条件で探す")
+search_btn = driver.find_element(By.LINK_TEXT, "この条件で探す")
 search_btn.click()
 time.sleep(1)
 
@@ -99,18 +98,18 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
     time.sleep(1)
 
     # 求人のタイトルをすべて取得する
-    for elem_ttl in driver.find_elements_by_xpath("//a[@class='headArea']/div[@class='catch']"):
-      elem_a = elem_ttl.find_element_by_xpath('..')
+    for elem_ttl in driver.find_elements(By.XPATH, "//a[@class='headArea']/div[@class='catch']"):
+      elem_a = elem_ttl.find_element(By.XPATH, "..")
       
       csvlist = []
       csvlist.append(str(item))
       csvlist.append(elem_ttl.text)
 
       # いいね表示の有無を判定
-      if elem_a.find_elements_by_xpath("..//span[@class='num']"):
+      if elem_a.find_elements(By.XPATH, "..//span[@class='num']"):
         
         # いいね数が表示されている場合はその数を取得
-        like = elem_a.find_element_by_xpath("..//span[@class='num']").text
+        like = elem_a.find_element(By.XPATH, "..//span[@class='num']").text
         
         # 数字以外の部分が不要なので削除
         like_num = re.sub(r"\D", "", like)
@@ -160,9 +159,9 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
       item = item + 1
 
     # 次ページの有無を判定
-    if driver.find_elements_by_link_text('次のページへ'):
+    if driver.find_elements(By.LINK_TEXT, "次のページへ"):
       # 次ページが存在する場合は次ぺージへ遷移
-      next_link = driver.find_element_by_link_text('次のページへ')
+      next_link = driver.find_element(By.LINK_TEXT, "次のページへ")
       driver.get(next_link.get_attribute('href'))
 
     else:
