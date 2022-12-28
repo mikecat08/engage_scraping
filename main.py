@@ -175,7 +175,7 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
       # 次ページが存在しない場合はループ処理を終了
       break
 
-    if i > 2:
+    if i > 6:
       break
 
 print ('csvファイルを作成しました。')
@@ -210,9 +210,22 @@ print(max1)
 # 黄緑色をセルに設定する処理
 fill = PatternFill(patternType='solid', fgColor='0000FF00')
 
-# # 
-# for i in range(2, max1+1):
-#   if ws1['']
+# 
+for i in range(2, max1+1):
+  if ws1['E' + str(i)].value == True:
+    ws1['E' + str(i)].fill = fill
+  
+  if ws1['F' + str(i)].value == True:
+    ws1['F' + str(i)].fill = fill
+
+  if ws1['G' + str(i)].value == True:
+    ws1['G' + str(i)].fill = fill
+
+  if ws1['H' + str(i)].value == True:
+    ws1['H' + str(i)].fill = fill
+
+  if ws1['I' + str(i)].value == True:
+    ws1['I' + str(i)].fill = fill
 
 # xlsxファイルを保存
 wb1.save(dir + '//' + xlsx_file_name)
