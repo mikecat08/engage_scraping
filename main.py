@@ -7,7 +7,8 @@ import datetime
 import os
 import re
 import pandas as pd
-import openpyxl
+import openpyxl as xl
+from openpyxl.styles import PatternFill
 import glob
 
 driver = webdriver.Chrome('./driver/chromedriver')
@@ -168,7 +169,7 @@ with open(csv_file_name, 'w', encoding='cp932', errors='ignore') as f:
       # 次ページが存在しない場合はループ処理を終了
       break
 
-    if i > 6:
+    if i > 2:
       break
 
 print ('csvファイルを作成しました。')
@@ -190,6 +191,21 @@ os.makedirs(dir, exist_ok=True)
 xlsx_file_name = 'engage' + csv_date + '.xlsx'
 like_sort.to_excel(dir + '//' + xlsx_file_name, index=False)
 print ('xlsxファイルを作成しました。')
+
+# 作成したxlsxファイルの読み込み
+inputfile = dir + '//' + xlsx_file_name
+wb1 = xl.load_workbook(filename=inputfile)
+ws1 = wb1.worksheets[0]
+
+# 読み込んだシートの最終行を取得
+max1 = ws1.max_row
+print(max1)
+
+# 黄緑色をセルに設定する処理
+fill = PatternFill(patternType='solid', fgColor='0000FF00')
+
+# xlsxファイルを保存
+wb1.save(dir + '//' + xlsx_file_name)
 
 # csvファイルはもう使わないので削除
 # 作業ディレクトリにあるcsvファイルを全て指定
